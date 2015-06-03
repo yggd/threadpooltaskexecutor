@@ -1,0 +1,37 @@
+group 'org.yggd.batch'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'groovy'
+
+repositories {
+    mavenCentral()
+}
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'io.spring.gradle:dependency-management-plugin:0.4.1.RELEASE'
+    }
+}
+
+apply plugin: 'io.spring.dependency-management'
+
+dependencyManagement {
+    imports {
+        mavenBom 'io.spring.platform:platform-bom:1.1.2.RELEASE'
+    }
+}
+
+dependencies {
+    compile 'org.codehaus.groovy:groovy-all'
+    compile 'org.slf4j:slf4j-api'
+    compile 'org.springframework:spring-context'
+    compile 'org.slf4j:jcl-over-slf4j'
+    runtime 'ch.qos.logback:logback-classic'
+    testCompile 'junit:junit'
+    testCompile 'org.springframework:spring-test'
+    testCompile 'org.spockframework:spock-spring'
+    testCompile 'cglib:cglib-nodep:3.1'
+}
