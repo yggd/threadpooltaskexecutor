@@ -44,4 +44,23 @@ class ThreadPoolTaskExecutorWrapperTest extends Specification {
             noExceptionThrown()
             wrapper.wrapper.semaphore.availablePermits() == wrapper.maxPoolSize
     }
+
+    def "not accept case"() {
+        setup:
+        Executor executor = Spy ThreadPoolTaskExecutorWrapper
+        log.info "maxPoolSize:${wrapper.maxPoolSize}"
+        executor.execute(_) >> { throw new RejectedExecutionException('not accept')}
+        BatchTaskExecutorAdaptor target = new BatchTaskExecutorAdaptor(executor) // テスト対象にスパイを送り込む
+        when:
+        target.execute(new Runnable() {
+            @Override
+            void run() {
+                throw new IllegalStateException('ここでは実行されないスレッド')
+            }
+        })
+        then: 'ワーカスレッドが実行されず、セマフォのサイズも元に戻ること。'
+        Exception e = thrown TaskRejectedException
+        e.getMessage().contains 'not accept'
+        target.semaphore.availablePermits() == executor.maxPoolSize
+    }
 }

@@ -1,8 +1,8 @@
 package org.yggd.batch
 
+import org.springframework.core.task.TaskRejectedException
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor
 
-import java.util.concurrent.BlockingQueue
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.RejectedExecutionHandler
 import java.util.concurrent.Semaphore
@@ -44,6 +44,12 @@ class ThreadPoolTaskExecutorWrapper extends ThreadPoolTaskExecutor {
     @Override
     void execute(Runnable task) {
         this.semaphore.acquire()
-        super.execute(task)
+        try {
+            super.execute(task)
+        } catch (TaskRejectedException e) {
+            // ワーカスレッドの実行に失敗したときのみ、セマフォを解放。
+            semaphore.release()
+            throw e
+        }
     }
 }

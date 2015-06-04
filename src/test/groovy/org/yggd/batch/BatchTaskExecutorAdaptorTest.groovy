@@ -51,7 +51,7 @@ class BatchTaskExecutorAdaptorTest extends Specification {
     def "not accept case"() {
         setup:
             Executor executor = Spy ThreadPoolTaskExecutor, impl: sourceExecutor
-            log.info("maxPoolSize:${sourceExecutor.maxPoolSize}")
+            log.info "maxPoolSize:${sourceExecutor.maxPoolSize}"
             executor.execute(_) >> { throw new RejectedExecutionException('not accept')}
             BatchTaskExecutorAdaptor target = new BatchTaskExecutorAdaptor(executor) // テスト対象にスパイを送り込む
         when:
