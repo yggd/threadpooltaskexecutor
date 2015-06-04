@@ -9,18 +9,12 @@ import java.util.concurrent.TimeUnit
 
 class ThreadPoolExecutorWrapper extends ThreadPoolExecutor {
 
-    final Semaphore semaphore
+    volatile Semaphore semaphore
 
     ThreadPoolExecutorWrapper(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit,
                               BlockingQueue<Runnable> workQueue, ThreadFactory threadFactory,
                               RejectedExecutionHandler handler) {
         super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, threadFactory, handler)
-        this.semaphore = new Semaphore(maximumPoolSize)
-    }
-
-    @Override
-    protected void beforeExecute(Thread t, Runnable r) {
-        semaphore.acquire()
     }
 
     @Override
